@@ -1,3 +1,5 @@
+from itertools import chain
+
 from django.contrib.auth import authenticate, get_user_model
 from django.db.models import F, Func
 from django.shortcuts import get_object_or_404, redirect, render
@@ -20,29 +22,30 @@ class CreatePost(CreateAPIView):
     permission_classes = (IsAuthenticated,)
     serializer_class = PostSerializer
 
-    def post(self, request):
-        data = JSONParser().parse(request)
-        serializer = PostSerializer(data=data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=201)
-        return Response(serializer.errors, status=400)
+    def perform_create(self, serializer):        
+        serializer.save(owner = self.request.user)
 
 
 class CreateRepost(UpdateAPIView):
     permission_classes = (IsAuthenticated,)
     serializer_class = PostSerializer
+    lookup_url = 'pk'
 
-    def update(self, request, post_id):
-        instance = Post.objects.filter(id = post_id)
-        serializer = self.get_serializer(
-            instance, data=request.data, partial=True)
-        serializer.is_valid(raise_exception=True)
-
+    def get_queryset(self):
+        pk = int(self.kwargs.get(self.lookup_url))
+        post = get_object_or_404(Post, pk=pk)
         
-        instance.users.add(self.request.user.id)
-        instance.save()
-        self.perform_update(serializer)
+        return post
+
+    def update(self, request, pk):
+        data = JSONParser().parse(request)
+        post = Post.objects.filter(id=pk)
+        serializer = PostSerializer(post, data=data)
+        repost = serializer.save()
+
+        return repost
+
+    
 
 class AddComment(CreateAPIView):
     permission_classes = (IsAuthenticated,)
@@ -85,13 +88,17 @@ class UndoRepost(UpdateAPIView):
         instance.save()
         self.perform_update(serializer)
 
-class ShowAllPosts(APIView):
+class ShowAllPosts(ListAPIView):
     permission_classes = (IsAuthenticated,)
     serializer_class = PostSerializer
-
-    def show_posts(self, request):
-        posts = Post.objects,filter(owner = self.request.user)
-        return self.request.user.Reposts, posts
+    
+    def get_queryset(self):
+        queryset = self.request.user.Reposts
+        queryset1 = Post.objects.filter(owner=self.request.user)
+        serializer = self.serializer_class(queryset, many=True)
+        serializer1 = self.serializer_class(queryset1, many=True)
+        querylist = [serializer, serializer1]
+        return queryset
 
 
 class DeleteComment(APIView):
