@@ -18,15 +18,3 @@ class CreateUserView(CreateAPIView):
     serializer_class = UserSerializer
 
 
-class ChangePasswordView(generics.UpdateAPIView):
-
-    queryset = get_user_model().objects.all()
-    permission_classes = (IsAuthenticated,)
-    serializer_class = ChangePasswordSerializer
-
-
-class UpdateProfileView(generics.UpdateAPIView):
-
-    queryset = get_user_model().objects.all()
-    permission_classes = (IsAuthenticated,)
-    serializer_class = UpdateUserSerializer

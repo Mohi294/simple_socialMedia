@@ -1,20 +1,19 @@
-from django.shortcuts import render
-from rest_framework.generics import CreateAPIView, ListAPIView, UpdateAPIView
-from rest_framework.permissions import IsAuthenticated
-from post_manager.models import Post, Comment
-from rest_framework.views import APIView
-from django.db.models import Func, F
-from rest_framework.response import Response
-from rest_framework import status
-from rest_framework.serializers import ValidationError
-from user.serializers import SimpleUserSerializer
-from .serializers import CommentSerializer, PostSerializer
-from django.shortcuts import get_object_or_404, render, redirect
-from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate, get_user_model
+from django.db.models import F, Func
+from django.shortcuts import get_object_or_404, redirect, render
+from django.views.decorators.csrf import csrf_exempt
+from rest_framework import status
+from rest_framework.generics import CreateAPIView, ListAPIView, UpdateAPIView
 from rest_framework.parsers import JSONParser
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.serializers import ValidationError
+from rest_framework.views import APIView
+from user.serializers import SimpleUserSerializer
 
+from post_manager.models import Comment, Post
 
+from .serializers import CommentSerializer, PostSerializer
 
 
 class CreatePost(CreateAPIView):

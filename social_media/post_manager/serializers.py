@@ -1,9 +1,9 @@
-from rest_framework import serializers
-from post_manager.models import Post, Comment
-from user.serializers import SimpleUserSerializer
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
-from rest_framework import status
+from rest_framework import serializers, status
+from user.serializers import SimpleUserSerializer
+
+from post_manager.models import Comment, Post
 
 
 class PostSerializer(serializers.ModelSerializer):
