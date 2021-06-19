@@ -15,7 +15,7 @@ from user.serializers import SimpleUserSerializer
 
 from post_manager.models import Comment, Post
 
-from .serializers import CommentSerializer, PostSerializer
+from .serializers import CommentSerializer, PostSerializer, RepostSerializer
 
 
 class CreatePost(CreateAPIView):
@@ -28,7 +28,7 @@ class CreatePost(CreateAPIView):
 
 class CreateRepost(UpdateAPIView):
     permission_classes = (IsAuthenticated,)
-    serializer_class = PostSerializer
+    serializer_class = RepostSerializer
     lookup_url = 'pk'
 
     def get_queryset(self):
@@ -38,12 +38,12 @@ class CreateRepost(UpdateAPIView):
         return post
 
     def update(self, request, pk):
-        data = JSONParser().parse(request)
-        post = Post.objects.filter(id=pk)
-        serializer = PostSerializer(post, data=data)
-        repost = serializer.save()
-
-        return repost
+        posts = Post.objects.filter(id=pk)
+        for post in posts:            
+            post.users.add(self.request.user)
+            post.save()
+        serializer = RepostSerializer(posts)
+        return Response(serializer.data)
 
     
 

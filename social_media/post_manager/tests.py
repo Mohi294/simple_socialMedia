@@ -9,3 +9,6 @@ from rest_framework.test import APITestCase
 
 from .models import Comment, Post
 from .serializers import CommentSerializer, PostSerializer
+
+
+
