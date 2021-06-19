@@ -9,12 +9,11 @@ from post_manager.models import Comment, Post
 class PostSerializer(serializers.ModelSerializer):
     owner = SimpleUserSerializer(many=False, read_only=True)
     created_at = serializers.DateTimeField(read_only=True)
-    users = SimpleUserSerializer(many = True)
     
 
     class Meta:
         model = Post
-        fields = ('id', 'text', 'owner', 'created_at','users')
+        fields = ('id', 'text', 'owner', 'created_at')
         read_only_fields = ('id', 'owner', 'created_at')
 
     def create(self, validated_data):
@@ -33,7 +32,7 @@ class RepostSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Post
-        fields = ('id','text', 'owner', 'created_at', 'users')
+        fields = ('id', 'text', 'owner', 'created_at', 'users')
         read_only_fields = ('id', 'owner', 'created_at','text')
 
     

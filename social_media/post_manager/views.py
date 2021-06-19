@@ -90,15 +90,15 @@ class UndoRepost(UpdateAPIView):
 
 class ShowAllPosts(ListAPIView):
     permission_classes = (IsAuthenticated,)
-    serializer_class = PostSerializer
+    serializer_class = RepostSerializer
     
     def get_queryset(self):
         queryset = self.request.user.Reposts
         queryset1 = Post.objects.filter(owner=self.request.user)
         serializer = self.serializer_class(queryset, many=True)
         serializer1 = self.serializer_class(queryset1, many=True)
-        querylist = [serializer, serializer1]
-        return queryset
+        querylist = chain(serializer.data, serializer1.data)
+        return querylist
 
 
 class DeleteComment(APIView):
