@@ -42,7 +42,7 @@ class CreateRepost(UpdateAPIView):
         for post in posts:            
             post.users.add(self.request.user)
             post.save()
-        serializer = RepostSerializer(posts)
+        serializer = RepostSerializer(posts, many = True)
         return Response(serializer.data)
 
     
