@@ -10,7 +10,7 @@ class Post(models.Model):
     created_at = models.DateTimeField(default=timezone.now, null=False)
     text = models.TextField()
     users = models.ManyToManyField(
-        get_user_model(), related_name='Reposts', blank=True , null = True)
+        get_user_model(), related_name='Reposts', blank=True)
 
 
 class Comment(models.Model):

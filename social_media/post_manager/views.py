@@ -66,27 +66,31 @@ class DeletePost(APIView):
 
     def delete(self, request, post_id):         
         post = Post.objects.filter(id=post_id, owner=self.request.user)
-        serializer = self.get_serializer(
-            post, data=request.data, partial=True)
-        serializer.is_valid(raise_exception=True)
         post.delete()
 
-        return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class UndoRepost(UpdateAPIView):    
     permission_classes = (IsAuthenticated,)
-    serializer_class = PostSerializer
+    serializer_class = RepostSerializer
+    # lookup_url = 'pk'
+
+    def get_queryset(self):
+        post = Post.objects.filter(owner = self.request.user)
+
+        return post
 
     def update(self, request, post_id):
-        instance = Post.objects.filter(id=post_id)
-        serializer = self.get_serializer(
-            instance, data=request.data, partial=True)
-        serializer.is_valid(raise_exception=True)
-
-        instance.users.remove(self.request.user.id)
-        instance.save()
-        self.perform_update(serializer)
+        posts = Post.objects.filter(id=post_id)
+        # serializer = self.get_serializer(
+        #     instance, data=request.data, partial=True)
+        # serializer.is_valid(raise_exception=True)
+        for instance in posts:
+            instance.users.remove(self.request.user.id)
+            instance.save()
+        serializer = RepostSerializer(posts, many = True)
+        return Response(serializer.data)
 
 class ShowAllPosts(ListAPIView):
     permission_classes = (IsAuthenticated,)
