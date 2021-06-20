@@ -8,8 +8,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.test import APITestCase
 from rest_framework_jwt.settings import api_settings
 
-from user.serializers import (ChangePasswordSerializer, SimpleUserSerializer,
-                              UpdateUserSerializer, UserSerializer)
+from user.serializers import ( SimpleUserSerializer,UserSerializer)
 
 
 class RegistrationTestCase(APITestCase):
