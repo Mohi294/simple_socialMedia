@@ -51,13 +51,8 @@ class AddComment(CreateAPIView):
     permission_classes = (IsAuthenticated,)
     serializer_class = CommentSerializer
 
-    def post(self, request):
-        data = JSONParser().parse(request)
-        serializer = CommentSerializer(data=data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=201)
-        return Response(serializer.errors, status=400)
+    def perform_create(self, serializer):
+        serializer.save(comment_by=self.request.user)
 
 
 class DeletePost(APIView):
@@ -74,7 +69,7 @@ class DeletePost(APIView):
 class UndoRepost(UpdateAPIView):    
     permission_classes = (IsAuthenticated,)
     serializer_class = RepostSerializer
-    # lookup_url = 'pk'
+    
 
     def get_queryset(self):
         post = Post.objects.filter(owner = self.request.user)
@@ -83,9 +78,6 @@ class UndoRepost(UpdateAPIView):
 
     def update(self, request, post_id):
         posts = Post.objects.filter(id=post_id)
-        # serializer = self.get_serializer(
-        #     instance, data=request.data, partial=True)
-        # serializer.is_valid(raise_exception=True)
         for instance in posts:
             instance.users.remove(self.request.user.id)
             instance.save()
@@ -110,10 +102,20 @@ class DeleteComment(APIView):
     serializer_class = CommentSerializer
 
     def delete(self, request, comment_id):
-        comment = Comment.objects.filter(id=comment_id, owner=self.request.user)
-        serializer = self.get_serializer(
-            comment, data=request.data, partial=True)
-        serializer.is_valid(raise_exception=True)
+        comment = Comment.objects.filter(
+            id=comment_id, comment_by=self.request.user)
         comment.delete()
 
-        return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+class PostComments(ListAPIView):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = CommentSerializer
+    lookup_url = 'pk'
+
+
+    def get_queryset(self):
+        pk = int(self.kwargs.get(self.lookup_url))
+        comments = Comment.objects.filter(post__id = pk)
+        # serializer = CommentSerializer(comments)
+        return comments

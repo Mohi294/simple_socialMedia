@@ -19,10 +19,6 @@ class PostSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         return Post.objects.create(**validated_data)
 
-    # def update(self, instance, validated_data):
-    #     instance.text = validated_data.get('text', instance.text)
-    #     instance.users.add(self.request.user)
-    #     return instance
 
 
 class RepostSerializer(serializers.ModelSerializer):
@@ -39,7 +35,7 @@ class RepostSerializer(serializers.ModelSerializer):
 
 
 class CommentSerializer(serializers.ModelSerializer):
-    owner = SimpleUserSerializer(many=False, read_only=True)
+    comment_by = SimpleUserSerializer(many=False, read_only=True)
 
     class Meta:
         model = Comment

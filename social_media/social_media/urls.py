@@ -23,7 +23,9 @@ urlpatterns = [
     path('api/post/show_posts/', post_views.ShowAllPosts.as_view(), name='show_all_posts'),
     # comment
     path('api/post/comment/', post_views.AddComment.as_view(), name='comment'),
-    path('api/post/delete_comment/<int:comment_id>/', post_views.DeleteComment.as_view(), name='delete_comment')
+    path('api/post/delete_comment/<int:comment_id>/', post_views.DeleteComment.as_view(), name='delete_comment'),
+    path('api/post/show_comment/<int:pk>/',
+         post_views.PostComments.as_view(), name='show_comment'),
 
     
 
